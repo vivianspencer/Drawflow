@@ -495,6 +495,11 @@ export default class Drawflow {
           var id_input = input_id.slice(5);
           var id_output = output_id.slice(5);
 
+          var arrow = document.createElementNS('http://www.w3.org/2000/svg',"path");
+          arrow.classList.add("arrow");
+          arrow.setAttributeNS(null, 'd', '');
+          this.connection_ele.appendChild(arrow);
+
           this.drawflow.drawflow[this.module].data[id_output].outputs[output_class].connections.push( {"node": id_input, "output": input_class});
           this.drawflow.drawflow[this.module].data[id_input].inputs[input_class].connections.push( {"node": id_output, "input": output_class});
           this.updateConnectionNodes('node-'+id_output);
@@ -635,7 +640,7 @@ export default class Drawflow {
           var hx1 = line_x + Math.abs(x - line_x) * curvature;
           var hx2 = x - Math.abs(x - line_x) * curvature;
         }
-        return ' M '+ line_x +' '+ line_y +' C '+ hx1 +' '+ line_y +' '+ hx2 +' ' + y +' ' + x +'  ' + y;
+        return ' M '+ line_x +' '+ line_y +' C '+ hx1 +' '+ line_y +' '+ hx2 +' ' + y +' ' + (x - 12) +'  ' + y;
 
         break
       case 'close':
@@ -646,7 +651,7 @@ export default class Drawflow {
           var hx1 = line_x + Math.abs(x - line_x) * curvature;
           var hx2 = x - Math.abs(x - line_x) * curvature;
         }
-        return ' M '+ line_x +' '+ line_y +' C '+ hx1 +' '+ line_y +' '+ hx2 +' ' + y +' ' + x +'  ' + y;
+        return ' M '+ line_x +' '+ line_y +' C '+ hx1 +' '+ line_y +' '+ hx2 +' ' + y +' ' + (x - 12) +'  ' + y;
         break;
       case 'other':
         if(start_pos_x >= end_pos_x) {
@@ -656,14 +661,18 @@ export default class Drawflow {
           var hx1 = line_x + Math.abs(x - line_x) * curvature;
           var hx2 = x - Math.abs(x - line_x) * curvature;
         }
-        return ' M '+ line_x +' '+ line_y +' C '+ hx1 +' '+ line_y +' '+ hx2 +' ' + y +' ' + x +'  ' + y;
+        return ' M '+ line_x +' '+ line_y +' C '+ hx1 +' '+ line_y +' '+ hx2 +' ' + y +' ' + (x - 12) +'  ' + y;
         break;
+      case 'drag':
+        var hx1 = line_x + Math.abs(x - line_x) * curvature;
+        var hx2 = x - Math.abs(x - line_x) * curvature;
+        return ' M '+ line_x +' '+ line_y +' C '+ hx1 +' '+ line_y +' '+ hx2 +' ' + y +' ' + x +'  ' + y
       default:
 
         var hx1 = line_x + Math.abs(x - line_x) * curvature;
         var hx2 = x - Math.abs(x - line_x) * curvature;
 
-        return ' M '+ line_x +' '+ line_y +' C '+ hx1 +' '+ line_y +' '+ hx2 +' ' + y +' ' + x +'  ' + y;
+        return ' M '+ line_x +' '+ line_y +' C '+ hx1 +' '+ line_y +' '+ hx2 +' ' + y +' ' + (x - 12) +'  ' + y;
     }
 
   }
@@ -677,6 +686,12 @@ export default class Drawflow {
     // path.innerHTML = 'a';
     connection.classList.add("connection");
     connection.appendChild(path);
+
+    var arrow = document.createElementNS('http://www.w3.org/2000/svg',"path");
+    arrow.classList.add("arrow");
+    arrow.setAttributeNS(null, 'd', '');
+    connection.appendChild(arrow);
+
     this.precanvas.appendChild(connection);
     var id_output = ele.parentElement.parentElement.id.slice(5);
     var output_class = ele.classList[1];
@@ -710,9 +725,12 @@ export default class Drawflow {
 
     //path.setAttributeNS(null, 'd', 'M '+ line_x +' '+ line_y +' C '+ hx1 +' '+ line_y +' '+ hx2 +' ' + y +' ' + x +'  ' + y);
     var curvature = this.curvature;
-    var lineCurve = this.createCurvature(line_x, line_y, x, y, curvature, 'openclose');
+    var lineCurve = this.createCurvature(line_x, line_y, x, y, curvature, 'drag');
     path.setAttributeNS(null, 'd', lineCurve);
 
+    var arrow = this.connection_ele.children[1];
+    var arrowCoords = ' M '+ x +' ' + (y - 7.5) +' l 12 7.5 l -12 7.5 v -15 z';
+    arrow.setAttributeNS(null, 'd', arrowCoords);
   }
 
   addConnection(id_output, id_input, output_class, input_class) {
@@ -740,6 +758,12 @@ export default class Drawflow {
           var path = document.createElementNS('http://www.w3.org/2000/svg',"path");
           path.classList.add("main-path");
           path.setAttributeNS(null, 'd', '');
+
+          var arrow = document.createElementNS('http://www.w3.org/2000/svg',"path");
+          arrow.classList.add("arrow");
+          arrow.setAttributeNS(null, 'd', '');
+          connection.appendChild(arrow);
+
           // path.innerHTML = 'a';
           connection.classList.add("connection");
           connection.classList.add("node_in_node-"+id_input);
@@ -812,6 +836,9 @@ export default class Drawflow {
 
         const lineCurve = createCurvature(line_x, line_y, x, y, curvature, 'openclose');
         elemsOut[item].children[0].setAttributeNS(null, 'd', lineCurve );
+
+        var arrowCoords = ' M '+ (x - 12) +' ' + (y - 7.5) +' l 12 7.5 l -12 7.5 l 0 -15 z';
+        elemsOut[item].children[1].setAttributeNS(null, 'd', arrowCoords );
       } else {
         const points = elemsOut[item].querySelectorAll('.point');
         let linecurve = '';
@@ -969,6 +996,9 @@ export default class Drawflow {
 
         } else {
           elemsOut[item].children[0].setAttributeNS(null, 'd', linecurve);
+
+          var arrowCoords = ' M '+ (x - 12) +' ' + (y - 7.5) +' l 12 7.5 l -12 7.5 l 0 -15 z';
+          elemsOut[item].children[1].setAttributeNS(null, 'd', arrowCoords );
         }
 
       }
@@ -1005,6 +1035,8 @@ export default class Drawflow {
         const lineCurve = createCurvature(line_x, line_y, x, y, curvature, 'openclose');
         elems[item].children[0].setAttributeNS(null, 'd', lineCurve );
 
+        var arrowCoords = ' M '+ (x - 12) +' ' + (y - 7.5) +' l 12 7.5 l -12 7.5 l 0 -15 z';
+        elems[item].children[1].setAttributeNS(null, 'd', arrowCoords );
       } else {
         const points = elems[item].querySelectorAll('.point');
         let linecurve = '';
@@ -1166,6 +1198,9 @@ export default class Drawflow {
 
         } else {
           elems[item].children[0].setAttributeNS(null, 'd', linecurve);
+
+          var arrowCoords = ' M '+ (x - 12) +' ' + (y - 7.5) +' l 12 7.5 l -12 7.5 l 0 -15 z';
+          elems[item].children[1].setAttributeNS(null, 'd', arrowCoords );
         }
 
       }
@@ -1483,6 +1518,12 @@ export default class Drawflow {
         connection.classList.add(input_item);
 
         connection.appendChild(path);
+
+        var arrow = document.createElementNS('http://www.w3.org/2000/svg',"path");
+        arrow.classList.add("arrow");
+        arrow.setAttributeNS(null, 'd', '');
+        connection.appendChild(arrow);
+
         precanvas.appendChild(connection);
 
       });

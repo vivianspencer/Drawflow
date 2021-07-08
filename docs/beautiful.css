@@ -214,7 +214,9 @@ cursor: pointer;
   stroke: #4ea9ff;
   stroke-width: 3px;
 }
-
+.drawflow .connection .arrow {
+  fill: #4ea9ff;
+}
 .drawflow .drawflow-node .input, .drawflow .drawflow-node .output {
   height: 15px;
   width: 15px;

@@ -86,9 +86,17 @@
   stroke: steelblue;
   transform: translate(-9999px, -9999px);
 }
+.drawflow .connection .arrow {
+  stroke: none;
+  fill: steelblue;
+  transform: translate(-9999px, -9999px);
+}
 .drawflow .connection .main-path:hover {
   stroke: #1266ab;
   cursor: pointer;
+}
+.drawflow .connection .main-path:hover + .drawflow .connection .arrow {
+  fill: #1266ab;
 }
 
 .drawflow .connection .main-path.selected {
