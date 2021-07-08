@@ -727,12 +727,14 @@ export default class Drawflow {
   }
 
   updateConnectionText(id_output, id_input, output_class, input_class, value) {
-	var edgeText = document.getElementById("node-"+id_output+"_node-"+id_input+"_edge_text");	 
-	var data = document.createTextNode(value);
-	edgeText.appendChild(data);					 	 
-	 
-	this.drawflow.drawflow[this.module].data[id_output].outputs[output_class].connections[0].text = value;	 
-	this.drawflow.drawflow[this.module].data[id_input].inputs[input_class].connections[0].text = value;
+	if (value) {
+      var edgeText = document.getElementById("node-" + id_output + "_node-" + id_input + "_edge_text");
+      var data = document.createTextNode(value);
+      edgeText.appendChild(data);
+
+      this.drawflow.drawflow[this.module].data[id_output].outputs[output_class].connections[0].text = value;
+      this.drawflow.drawflow[this.module].data[id_input].inputs[input_class].connections[0].text = value;
+    }
   }
   
   updateConnectionType(id_output, id_input, output_class, input_class, value) {
@@ -774,13 +776,13 @@ export default class Drawflow {
           connection.classList.add(output_class);
           connection.classList.add(input_class);
 		  
-          if(path_text != null && path_text != "") {	
+          if (path_text != null && path_text != "" && typeof path_text !== 'undefined') {
             connection.classList.add(path_classes);
           }
 		  
           connection.appendChild(path);
 		  	  
-          if(path_text != null && path_text != "") {			
+          if (path_text != null && path_text != "" && typeof path_text !== 'undefined') {
             /* Add text placeholder */
             var path_id = id_output+"_"+id_input+"_edge";	
             var text = document.createElementNS('http://www.w3.org/2000/svg', "text");
@@ -1524,7 +1526,11 @@ export default class Drawflow {
         var path_id = "node-"+dataNode.id+"_"+"node-"+dataNode.inputs[input_item].connections[output_item].node+"_edge";		
         path.classList.add("main-path");
         path.setAttributeNS(null, 'd', '');
-        path.classList.add(dataNode.inputs[input_item].connections[output_item].type);
+
+        if (dataNode.inputs[input_item].connections[output_item].type) {
+          path.classList.add(dataNode.inputs[input_item].connections[output_item].type);
+        }
+
         path.setAttributeNS(null, 'id', path_id);
         // path.innerHTML = 'a';
         connection.classList.add("connection");
@@ -1535,21 +1541,23 @@ export default class Drawflow {
 
         connection.appendChild(path);
 
-        var text = document.createElementNS('http://www.w3.org/2000/svg', "text");
-        var textPath = document.createElementNS('http://www.w3.org/2000/svg', "textPath");		  			
-        textPath.setAttributeNS(null, 'startOffset', '50%');
-        textPath.setAttributeNS(null, 'text-anchor', 'middle');		  
-        textPath.setAttributeNS("http://www.w3.org/1999/xlink", "xlink:href", "#"+path_id);
-        textPath.setAttributeNS(null, "id", path_id+"_text");	
-        text.setAttributeNS(null, "dy", -10);			
-        var data = document.createTextNode(dataNode.inputs[input_item].connections[output_item].text);
-        textPath.appendChild(data);
-        text.appendChild(textPath);
-        connection.appendChild(text);
-        	
-        
-        precanvas.appendChild(connection);
 
+        if (dataNode.inputs[input_item].connections[output_item].text) {
+          var text = document.createElementNS('http://www.w3.org/2000/svg', "text");
+          var textPath = document.createElementNS('http://www.w3.org/2000/svg', "textPath");
+          textPath.setAttributeNS(null, 'startOffset', '50%');
+          textPath.setAttributeNS(null, 'text-anchor', 'middle');
+          textPath.setAttributeNS("http://www.w3.org/1999/xlink", "xlink:href", "#" + path_id);
+          textPath.setAttributeNS(null, "id", path_id + "_text");
+          text.setAttributeNS(null, "dy", -10);
+          var data = document.createTextNode(dataNode.inputs[input_item].connections[output_item].text);
+          textPath.appendChild(data);
+          text.appendChild(textPath);
+          connection.appendChild(text);
+        }
+
+
+        precanvas.appendChild(connection);
       });
     });
 
