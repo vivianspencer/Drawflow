@@ -1,5 +1,5 @@
 export default class Drawflow {
-  constructor(container, render = null) {
+  constructor(container, render = null, parent = null) {
     this.events = {};
     this.container = container;
     this.precanvas = null;
@@ -31,6 +31,8 @@ export default class Drawflow {
     this.force_first_input = false;
     this.draggable_inputs = true;
     this.useuuid = false;
+    this.parent = parent
+
 
 
 
@@ -1456,11 +1458,13 @@ export default class Drawflow {
       if(parseInt(this.render.version) === 3 ) {
         //Vue 3
         let wrapper = this.render.createApp({
+          parent: this.parent,
           render: h => this.render.h(this.noderegister[html].html, this.noderegister[html].props, this.noderegister[html].options)
         }).mount(content)
       } else {
         // Vue 2
         let wrapper = new this.render({
+          parent: this.parent,
           render: h => h(this.noderegister[html].html, { props: this.noderegister[html].props }),
           ...this.noderegister[html].options
         }).$mount()
@@ -1617,11 +1621,13 @@ export default class Drawflow {
       if(parseInt(this.render.version) === 3 ) {
         //Vue 3
         let wrapper = this.render.createApp({
+          parent: this.parent,
           render: h => this.render.h(this.noderegister[dataNode.html].html, this.noderegister[dataNode.html].props, this.noderegister[dataNode.html].options)
         }).mount(content)
       } else {
         //Vue 2
         let wrapper = new this.render({
+          parent: this.parent,
           render: h => h(this.noderegister[dataNode.html].html, { props: this.noderegister[dataNode.html].props }),
           ...this.noderegister[dataNode.html].options
         }).$mount()
