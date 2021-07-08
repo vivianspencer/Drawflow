@@ -500,6 +500,7 @@ export default class Drawflow {
           var arrow = document.createElementNS('http://www.w3.org/2000/svg',"path");
           arrow.classList.add("arrow");
           arrow.setAttributeNS(null, 'd', '');
+
           arrow.setAttributeNS(null, 'id', path_id + '_arrow');
           this.connection_ele.appendChild(arrow);
 
@@ -786,6 +787,12 @@ export default class Drawflow {
           var path = document.createElementNS('http://www.w3.org/2000/svg',"path");
           path.classList.add("main-path");
           path.setAttributeNS(null, 'd', '');
+
+          var arrow = document.createElementNS('http://www.w3.org/2000/svg',"path");
+          arrow.classList.add("arrow");
+          arrow.setAttributeNS(null, 'd', '');
+          connection.appendChild(arrow);
+
           // path.innerHTML = 'a';
           connection.classList.add("connection");
           connection.classList.add("node_in_node-"+id_input);
@@ -1047,6 +1054,9 @@ export default class Drawflow {
 
         } else {
           elemsOut[item].children[0].setAttributeNS(null, 'd', linecurve);
+
+          var arrowCoords = ' M '+ (x - 12) +' ' + (y - 7.5) +' l 12 7.5 l -12 7.5 l 0 -15 z';
+          elemsOut[item].children[1].setAttributeNS(null, 'd', arrowCoords );
         }
 
       }

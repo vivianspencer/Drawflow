@@ -152,13 +152,17 @@
           //return ' M '+ line_x +' '+ line_y +' C '+ hx1 +' '+ line_y +' '+ hx2 +' ' + y +' ' + x +'  ' + y;
           //return ' M '+ line_x +' '+ line_y + ' q ' + (x-line_x)/2 + ' ' + (y-line_y) + ' '   + (x-line_x) +' ' + (y-line_y) ;
           break;
+        case 'drag':
+          var hx1 = line_x + Math.abs(x - line_x) * curvature;
+          var hx2 = x - Math.abs(x - line_x) * curvature;
+          return ' M '+ line_x +' '+ line_y +' C '+ hx1 +' '+ line_y +' '+ hx2 +' ' + y +' ' + x +'  ' + y
         default:
 
           var hx1 = line_x + Math.abs(x - line_x) * curvature;
           var hx2 = x - Math.abs(x - line_x) * curvature;
 
           //return ' M '+ line_x +' '+ line_y +' C '+ hx1 +' '+ line_y +' '+ hx2 +' ' + y +' ' + x +'  ' + y;
-          return ' M '+ line_x +' '+ line_y +' C '+ hx1 +' '+ line_y +' '+ hx2 +' ' + y +' ' + x +'  ' + y;
+          return ' M '+ line_x +' '+ line_y +' C '+ hx1 +' '+ line_y +' '+ hx2 +' ' + y +' ' + (x - 12) +'  ' + y;
           //return ' M '+ line_x +' '+ line_y + ' q ' + (x-line_x)/2 + ' ' + (y-line_y) + ' '   + (x-line_x) +' ' + (y-line_y) ;
       }
 
