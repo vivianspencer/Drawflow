@@ -95,12 +95,15 @@
   stroke: #1266ab;
   cursor: pointer;
 }
-.drawflow .connection .main-path:hover + .drawflow .connection .arrow {
+.drawflow .connection .main-path:hover + .arrow {
   fill: #1266ab;
 }
 
 .drawflow .connection .main-path.selected {
   stroke: #43b993;
+}
+.drawflow .connection .main-path.selected + .arrow {
+  fill: #43b993;
 }
 
 .drawflow .connection .point {
