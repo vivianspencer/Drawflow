@@ -510,7 +510,9 @@ export default class Drawflow {
           textPath.setAttributeNS(null, 'startOffset', '50%');
           textPath.setAttributeNS(null, 'text-anchor', 'middle');		  
           textPath.setAttributeNS("http://www.w3.org/1999/xlink", "xlink:href", "#"+path_id);
-          textPath.setAttributeNS(null, "id", path_id+"_text");	
+          textPath.setAttributeNS(null, "id", path_id+"_text");
+          textPath.classList.add("path-text-child");
+          text.classList.add("path-text");
           text.setAttributeNS(null, "dy", -10);
           text.appendChild(textPath);
           this.connection_ele.appendChild(text);
@@ -750,16 +752,29 @@ export default class Drawflow {
       var data = document.createTextNode(value);
       edgeText.appendChild(data);
 
-      this.drawflow.drawflow[this.module].data[id_output].outputs[output_class].connections[0].text = value;
-      this.drawflow.drawflow[this.module].data[id_input].inputs[input_class].connections[0].text = value;
+      let outputs = this.drawflow.drawflow[this.module].data[id_output].outputs[output_class].connections;
+      for (let key in outputs) {
+        if (outputs.hasOwnProperty(key) && id_input === outputs[key].node) {
+          this.drawflow.drawflow[this.module].data[id_output].outputs[output_class].connections[key].text = value;
+        }
+      }
+
+      let inputs = this.drawflow.drawflow[this.module].data[id_input].inputs[input_class].connections;
+      for (let key in inputs) {
+        if (inputs.hasOwnProperty(key) && id_output === inputs[key].node) {
+          this.drawflow.drawflow[this.module].data[id_input].inputs[input_class].connections[key].text = value;
+        }
+      }
     }
   }
   
   updateConnectionType(id_output, id_input, output_class, input_class, value) {
-	var edge = document.getElementById("node-"+id_output+"_node-"+id_input+"_edge");	
-	edge.classList.add(value);	 
-	this.drawflow.drawflow[this.module].data[id_output].outputs[output_class].connections[0].type = value
-	this.drawflow.drawflow[this.module].data[id_input].inputs[input_class].connections[0].type = value;	  
+    if (value) {
+      var edge = document.getElementById("node-" + id_output + "_node-" + id_input + "_edge");
+      edge.classList.add(value);
+      this.drawflow.drawflow[this.module].data[id_output].outputs[output_class].connections[0].type = value
+      this.drawflow.drawflow[this.module].data[id_input].inputs[input_class].connections[0].type = value;
+    }
   }
   
   addConnection(id_output, id_input, output_class, input_class, path_classes="", path_text="") {
@@ -821,11 +836,13 @@ export default class Drawflow {
             textPath.setAttributeNS(null, 'text-anchor', 'middle');		  
             textPath.setAttributeNS("http://www.w3.org/1999/xlink", "xlink:href", "#"+path_id);
             textPath.setAttributeNS(null, "id", path_id+"_text");	
-            text.setAttributeNS(null, "dy", -10);			
+            textPath.classList.add("path-text-child");
+            text.classList.add("path-text");
+            text.setAttributeNS(null, "dy", -10);
             var data = document.createTextNode(path_text);
             textPath.appendChild(data);
             text.appendChild(textPath);
-            connection.appendChild(text);			
+            connection.appendChild(text);
           }
 		  
 		  
@@ -1267,12 +1284,71 @@ export default class Drawflow {
   }
 
   dblclick(e) {
-    if(this.connection_selected != null && this.reroute) {
+    if(this.connection_selected != null) {
+      if (this.reroute) {
         this.createReroutePoint(this.connection_selected);
+      } else {
+        this.editTextPath(e.target.parentElement.querySelector('.path-text-child'));
+      }
     }
 
     if(e.target.classList[0] === 'point') {
         this.removeReroutePoint(e.target);
+    }
+
+    if(e.target.classList[0] === 'path-text-child') {
+      this.editTextPath(e.target);
+    }
+  }
+
+  editTextPath(ele) {
+    let label = prompt('Add label');
+    if (label !== undefined && label !== null && label !== '') {
+      let data = document.createTextNode(label);
+
+      if (ele.childNodes[0] !== undefined) {
+        ele.replaceChild(data, ele.childNodes[0]);
+      } else {
+        ele.appendChild(data);
+      }
+
+      let id_input = null;
+      let id_output = null;
+      let output_class = null;
+      let input_class = null;
+      ele.parentElement.parentElement.classList.forEach((str) => {
+        if (str.startsWith('node_in')) {
+          id_input = str.slice(13);
+        }
+
+        if (str.startsWith('node_out')) {
+          id_output = str.slice(14);
+        }
+
+        if (str.startsWith('output')) {
+          output_class = str;
+        }
+
+        if (str.startsWith('input')) {
+          input_class = str;
+        }
+      });
+
+      if (id_input !== null && id_output !== null) {
+        let outputs = this.drawflow.drawflow[this.module].data[id_output].outputs[output_class].connections;
+        for (let key in outputs) {
+          if (outputs.hasOwnProperty(key) && id_input === outputs[key].node) {
+            this.drawflow.drawflow[this.module].data[id_output].outputs[output_class].connections[key].text = label;
+          }
+        }
+
+        let inputs = this.drawflow.drawflow[this.module].data[id_input].inputs[input_class].connections;
+        for (let key in inputs) {
+          if (inputs.hasOwnProperty(key) && id_output === inputs[key].node) {
+            this.drawflow.drawflow[this.module].data[id_input].inputs[input_class].connections[key].text = label;
+          }
+        }
+      }
     }
   }
 
@@ -1597,6 +1673,8 @@ export default class Drawflow {
         textPath.setAttributeNS(null, 'text-anchor', 'middle');
         textPath.setAttributeNS("http://www.w3.org/1999/xlink", "xlink:href", "#" + path_id);
         textPath.setAttributeNS(null, "id", path_id + "_text");
+        textPath.classList.add("path-text-child");
+        text.classList.add("path-text");
         text.setAttributeNS(null, "dy", -10);
 
         if (dataNode.inputs[input_item].connections[output_item].text) {
